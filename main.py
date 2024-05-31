@@ -1,14 +1,17 @@
+from flask import Flask, render_template, Response
 import cv2
 import torch
 import numpy as np
 from ultralytics import YOLO
 
-def load_yolo_model(model_path):
-    model = YOLO(model_path)
-    return model
+app = Flask(__name__)
+
+# Load YOLO model
+model_path = "Models/yolov8_violence_detection.pt"
+labels = ["non_violence", "violence"]
+model = YOLO(model_path)
 
 def detect_objects(frame, model, conf_threshold=0.25, relevant_classes=None):
-    # Preprocess the frame for YOLOv8 model
     img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = model(img, conf=conf_threshold)
     detections = []
@@ -27,34 +30,38 @@ def draw_detections(frame, detections, labels):
         x1, y1, x2, y2, conf, cls = detection
         if int(cls) < len(labels):
             label = f"{labels[int(cls)]} {conf:.2f}"
-            # Draw bounding box
             cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
-            # Draw label
             cv2.putText(frame, label, (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
     return frame
 
-def main(model_path, labels):
-    model = load_yolo_model(model_path)
+def gen_frames():
     relevant_classes = [0, 1]
     cap = cv2.VideoCapture(0)
-
     if not cap.isOpened():
         print("Error: Could not open webcam.")
         return
-
     while True:
-        ret, frame = cap.read()
-        if not ret:
+        success, frame = cap.read()
+        if not success:
             break
         detections = detect_objects(frame, model, relevant_classes=relevant_classes)
         frame = draw_detections(frame, detections, labels)
-        cv2.imshow('Violence Detection', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    cap.release()
-    cv2.destroyAllWindows()
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/webcam')
+def webcam():
+    return render_template('webcam.html')
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == "__main__":
-    model_path = "Models/yolov8_violence_detection.pt"
-    labels = ["non_violence", "violence"]
-    main(model_path, labels)
+    app.run(debug=True)
