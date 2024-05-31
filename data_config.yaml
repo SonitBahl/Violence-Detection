@@ -1,0 +1,6 @@
+names:
+- non_violence
+- violence
+path: data
+train: train/images
+val: val/images
