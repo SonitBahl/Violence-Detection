@@ -19,7 +19,7 @@ The dataset used for training and evaluating this model is the [Real Life Violen
 To get started with this project, clone the repository and install the necessary dependencies:
 
 ```bash
-git clone https://github.com/yourusername/violence-detection-yolov8.git
+git clone https://github.com/SonitBahl/Violence-Detection.git
 cd violence-detection-yolov8
 pip install -r requirements.txt
 
