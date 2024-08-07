@@ -7,7 +7,7 @@ from ultralytics import YOLO
 app = Flask(__name__)
 
 # Load YOLO model
-model_path = "Models/yolov8_violence_detection.pt"
+model_path = "Models/Violence.pt"
 labels = ["non_violence", "violence"]
 model = YOLO(model_path)
 
