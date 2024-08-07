@@ -20,7 +20,7 @@ To get started with this project, clone the repository and install the necessary
 
 ```bash
 git clone https://github.com/SonitBahl/Violence-Detection.git
-cd violence-detection-yolov8
+cd Violence-Detection
 pip install -r requirements.txt
 
 ```
