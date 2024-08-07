@@ -28,7 +28,6 @@ pip install -r requirements.txt
 This project was developed by Sonit Bahl.
 
 ## Acknowledgements
-## Acknowledgements
 - [YOLOv8](https://github.com/ultralytics/yolov8) for the object detection framework.
 - [Kaggle](https://www.kaggle.com) for providing the [Real Life Violence Situations Dataset](https://www.kaggle.com/datasets/mohamedmustafa/real-life-violence-situations-dataset).
 - The open-source community for their valuable contributions and resources.
